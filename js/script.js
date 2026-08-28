@@ -330,34 +330,27 @@ function initPalaciosApp() {
   });
 
   /* ==========================================================================
-     8. SLIDER INTERACTIVO ANTES Y DESPUÉS (MOUSE, TOUCH & RANGE INPUT)
+     8. SLIDER INTERACTIVO ANTES Y DESPUÉS (POINTER EVENTS, TOUCH & MOUSE)
      ========================================================================== */
   const comparisonContainer = document.getElementById('comparisonContainer');
   const comparisonBefore = document.getElementById('comparisonBefore');
   const comparisonHandle = document.getElementById('comparisonHandle');
-  const comparisonRange = document.getElementById('comparisonRange');
   const presetButtons = document.querySelectorAll('.comparison-preset-btn');
 
   if (comparisonContainer && comparisonBefore && comparisonHandle) {
     let isDragging = false;
 
-    function updateSlider(percentage, updateRangeInput = true) {
-      // Clampear valor entre 0 y 100
+    function setSliderPos(percentage) {
       const clamped = Math.max(0, Math.min(100, Number(percentage)));
-      const clipPolygon = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
+      const polygonValue = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
 
-      comparisonBefore.style.clipPath = clipPolygon;
-      comparisonBefore.style.webkitClipPath = clipPolygon;
+      comparisonBefore.style.clipPath = polygonValue;
+      comparisonBefore.style.webkitClipPath = polygonValue;
       comparisonHandle.style.left = `${clamped}%`;
 
-      if (updateRangeInput && comparisonRange) {
-        comparisonRange.value = clamped;
-      }
-
-      // Actualizar botones de preajuste
       presetButtons.forEach(btn => {
         const val = parseFloat(btn.getAttribute('data-value'));
-        if (Math.abs(val - clamped) < 2) {
+        if (Math.abs(val - clamped) < 3) {
           btn.classList.add('active');
         } else {
           btn.classList.remove('active');
@@ -365,75 +358,100 @@ function initPalaciosApp() {
       });
     }
 
-    function calculatePercentFromPointer(clientX) {
+    function getPercentFromClientX(clientX) {
       const rect = comparisonContainer.getBoundingClientRect();
       if (rect.width <= 0) return 50;
       const offsetX = clientX - rect.left;
       return (offsetX / rect.width) * 100;
     }
 
-    // 1. Control mediante input range (soporte nativo para accesibilidad y arrastre)
-    if (comparisonRange) {
-      comparisonRange.addEventListener('input', (e) => {
-        updateSlider(parseFloat(e.target.value), false);
-      });
-      comparisonRange.addEventListener('change', (e) => {
-        updateSlider(parseFloat(e.target.value), false);
-      });
-    }
-
-    // 2. Control mediante Pointer Events (ratón, táctil, lápiz óptico)
-    function onPointerDown(e) {
-      isDragging = true;
-      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-      updateSlider(calculatePercentFromPointer(clientX));
-    }
-
     function onPointerMove(e) {
       if (!isDragging) return;
       const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-      updateSlider(calculatePercentFromPointer(clientX));
+      setSliderPos(getPercentFromClientX(clientX));
     }
 
-    function onPointerUp() {
-      isDragging = false;
+    function onPointerDown(e) {
+      isDragging = true;
+      if (e.target && e.target.setPointerCapture && e.pointerId !== undefined) {
+        try {
+          e.target.setPointerCapture(e.pointerId);
+        } catch (err) {}
+      }
+      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      setSliderPos(getPercentFromClientX(clientX));
     }
 
-    comparisonContainer.addEventListener('mousedown', onPointerDown);
-    window.addEventListener('mousemove', onPointerMove);
-    window.addEventListener('mouseup', onPointerUp);
-
-    // Eventos táctiles
-    comparisonContainer.addEventListener('touchstart', (e) => {
-      onPointerDown(e);
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
+    function onPointerUp(e) {
       if (isDragging) {
-        onPointerMove(e);
+        isDragging = false;
+        if (e.target && e.target.releasePointerCapture && e.pointerId !== undefined) {
+          try {
+            e.target.releasePointerCapture(e.pointerId);
+          } catch (err) {}
+        }
+      }
+    }
+
+    // 1. Pointer Events (Modern Standard: Chrome, Edge, Safari iOS 13+, Firefox)
+    comparisonContainer.addEventListener('pointerdown', onPointerDown);
+    comparisonContainer.addEventListener('pointermove', onPointerMove);
+    comparisonContainer.addEventListener('pointerup', onPointerUp);
+    comparisonContainer.addEventListener('pointercancel', onPointerUp);
+    window.addEventListener('pointerup', onPointerUp);
+
+    // 2. Mouse Events (Desktop fallback)
+    comparisonContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      setSliderPos(getPercentFromClientX(e.clientX));
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        setSliderPos(getPercentFromClientX(e.clientX));
+      }
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    // 3. Touch Events (Mobile fallback)
+    comparisonContainer.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      if (e.touches && e.touches[0]) {
+        setSliderPos(getPercentFromClientX(e.touches[0].clientX));
       }
     }, { passive: true });
 
-    window.addEventListener('touchend', onPointerUp);
-    window.addEventListener('touchcancel', onPointerUp);
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches && e.touches[0]) {
+        setSliderPos(getPercentFromClientX(e.touches[0].clientX));
+      }
+    }, { passive: true });
 
-    // Clic directo en cualquier parte del contenedor
-    comparisonContainer.addEventListener('click', (e) => {
-      updateSlider(calculatePercentFromPointer(e.clientX));
+    window.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+    window.addEventListener('touchcancel', () => {
+      isDragging = false;
     });
 
-    // 3. Botones rápidos de preajuste (0% Antes, 50% Mitad, 100% Después)
+    // Clic directo en cualquier parte de la imagen
+    comparisonContainer.addEventListener('click', (e) => {
+      setSliderPos(getPercentFromClientX(e.clientX));
+    });
+
+    // 4. Botones rápidos de preajuste (0% Antes, 50% Mitad, 100% Después)
     presetButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         const targetVal = parseFloat(btn.getAttribute('data-value') || '50');
-        updateSlider(targetVal, true);
+        setSliderPos(targetVal);
       });
     });
 
     // Inicializar al 50%
-    updateSlider(50, true);
+    setSliderPos(50);
   }
 
   /* ==========================================================================
