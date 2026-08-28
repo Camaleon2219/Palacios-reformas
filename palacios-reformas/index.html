@@ -62,8 +62,8 @@
 
   /* Espaciados y medidas */
   --container-max: 1240px;
-  --header-height: 80px;
-  --header-height-scrolled: 68px;
+  --header-height: 92px;
+  --header-height-scrolled: 76px;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -386,23 +386,60 @@ p {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   font-family: var(--font-heading);
   text-decoration: none;
   z-index: 1001;
+  transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+  transform: scale(1.02);
 }
 
 .logo__mark {
-  height: 48px;
+  height: 66px;
   width: auto;
+  max-width: 300px;
   display: flex;
   align-items: center;
+  transition: height var(--transition-normal), max-width var(--transition-normal);
+}
+
+.header--scrolled .logo__mark {
+  height: 56px;
+  max-width: 260px;
 }
 
 .logo__img {
-  height: 46px;
+  height: 64px;
   width: auto;
   object-fit: contain;
+  transition: height var(--transition-normal);
+}
+
+.header--scrolled .logo__img {
+  height: 54px;
+}
+
+@media (max-width: 991px) {
+  .logo__mark {
+    height: 56px;
+    max-width: 250px;
+  }
+  .header--scrolled .logo__mark {
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo__mark {
+    height: 48px;
+    max-width: 215px;
+  }
+  .header--scrolled .logo__mark {
+    height: 44px;
+  }
 }
 
 /* Navegación Desktop */
@@ -1131,6 +1168,9 @@ p {
 }
 
 .filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 20px;
   font-family: var(--font-heading);
   font-size: 0.875rem;
@@ -1139,12 +1179,15 @@ p {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
+  cursor: pointer;
+  user-select: none;
   transition: all var(--transition-fast);
 }
 
 .filter-btn:hover {
   color: var(--primary);
   border-color: var(--primary);
+  transform: translateY(-2px);
 }
 
 .filter-btn.active {
@@ -1152,12 +1195,34 @@ p {
   color: #ffffff;
   border-color: var(--primary);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.filter-btn__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-alt);
+  color: var(--text-muted);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.filter-btn.active .filter-btn__count {
+  background-color: var(--accent);
+  color: #ffffff;
 }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  transition: min-height 0.3s ease;
 }
 
 @media (max-width: 900px) {
@@ -1179,8 +1244,12 @@ p {
   background-color: var(--surface);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-  group: true;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.project-card.is-hidden {
+  display: none !important;
 }
 
 .project-card:hover {
@@ -2419,7 +2488,13 @@ textarea.form-control {
 }
 
 .footer-brand__logo {
-  margin-bottom: 18px;
+  margin-bottom: 22px;
+  display: inline-block;
+}
+
+.footer-brand__logo .logo__mark {
+  height: 72px;
+  max-width: 320px;
 }
 
 .footer-brand__desc {
@@ -2624,7 +2699,7 @@ body.has-scroll-reveal .reveal.is-visible {
     <div class="container header__container">
       <!-- Logotipo Vectorial Oficial PALACIOS REFORMAS -->
       <a href="#inicio" class="logo" aria-label="Palacios Reformas - Inicio">
-        <svg class="logo__mark" width="220" height="65" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo Palacios Reformas">
+        <svg class="logo__mark" width="270" height="80" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo Palacios Reformas">
           <!-- Icono persona estilizada -->
           <circle cx="85" cy="42" r="14" fill="#b46d2a"/>
           <path d="M50 48C58 65 72 82 85 92C98 82 112 65 120 48C110 60 98 70 85 70C72 70 60 60 50 48Z" fill="#b46d2a"/>
@@ -2690,8 +2765,8 @@ body.has-scroll-reveal .reveal.is-visible {
        ======================================================================== -->
   <section class="hero" id="inicio">
     <div class="hero__bg">
-      <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO HERO SI SE DISPONE DE ARCHIVO LOCAL -->
-      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85" alt="Reforma moderna y luminosa en Bilbao - Palacios Reformas" class="hero__img" referrerpolicy="no-referrer">
+      <!-- FOTO PRINCIPAL DEL PROYECTO (OBRA / REFORMA PALACIOS REFORMAS) -->
+      <img src="images/hero-reforma.jpg" alt="Reforma integral moderna en Bilbao y Bizkaia - Palacios Reformas" class="hero__img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85';">
     </div>
     <div class="hero__overlay"></div>
 
@@ -3027,29 +3102,27 @@ body.has-scroll-reveal .reveal.is-visible {
 
       <!-- Filtros dinámicos -->
       <div class="gallery-filters reveal">
-        <button class="filter-btn active" data-filter="all">TODOS</button>
-        <button class="filter-btn" data-filter="baños">BAÑOS</button>
-        <button class="filter-btn" data-filter="cocinas">COCINAS</button>
-        <button class="filter-btn" data-filter="reformas">REFORMAS</button>
-        <button class="filter-btn" data-filter="pintura">PINTURA</button>
-        <button class="filter-btn" data-filter="albanileria">ALBAÑILERÍA</button>
-        <button class="filter-btn" data-filter="carpinteria">CARPINTERÍA</button>
+        <button class="filter-btn active" data-filter="all">TODOS <span class="filter-btn__count">15</span></button>
+        <button class="filter-btn" data-filter="baños">BAÑOS <span class="filter-btn__count">3</span></button>
+        <button class="filter-btn" data-filter="cocinas">COCINAS <span class="filter-btn__count">3</span></button>
+        <button class="filter-btn" data-filter="reformas">REFORMAS <span class="filter-btn__count">3</span></button>
+        <button class="filter-btn" data-filter="albanileria">ALBAÑILERÍA <span class="filter-btn__count">2</span></button>
+        <button class="filter-btn" data-filter="pintura">PINTURA <span class="filter-btn__count">2</span></button>
+        <button class="filter-btn" data-filter="carpinteria">CARPINTERÍA <span class="filter-btn__count">2</span></button>
       </div>
 
       <!-- Grid de proyectos -->
       <div class="gallery-grid" id="galleryGrid">
-        
-        <!-- Proyecto 01 (Baño) -->
+        <!-- 1. Baño 01 -->
         <article class="project-card reveal" data-category="baños">
           <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" alt="Reforma de baño moderno en Bilbao" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" alt="Reforma integral de baño moderno en Bilbao" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
             <div class="project-card__overlay">
               <span class="project-card__category">Baños</span>
-              <h3 class="project-card__title">Proyecto 01</h3>
+              <h3 class="project-card__title">Reforma de Baño Principal</h3>
               <span class="project-card__location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Bilbao
+                Bilbao (Indautxu)
               </span>
             </div>
             <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
@@ -3058,17 +3131,16 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
         </article>
 
-        <!-- Proyecto 02 (Cocina) -->
+        <!-- 2. Cocina 01 -->
         <article class="project-card reveal reveal-delay-1" data-category="cocinas">
           <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80" alt="Reforma de cocina luminosa y abierta en Getxo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80" alt="Cocina de concepto abierto con isla en Getxo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
             <div class="project-card__overlay">
               <span class="project-card__category">Cocinas</span>
-              <h3 class="project-card__title">Proyecto 02</h3>
+              <h3 class="project-card__title">Cocina Abierta con Isla</h3>
               <span class="project-card__location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Getxo
+                Getxo (Las Arenas)
               </span>
             </div>
             <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
@@ -3077,14 +3149,13 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
         </article>
 
-        <!-- Proyecto 03 (Reforma integral) -->
+        <!-- 3. Reforma Integral 01 -->
         <article class="project-card reveal reveal-delay-2" data-category="reformas">
           <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80" alt="Reforma integral de vivienda en Barakaldo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80" alt="Reforma integral de piso en Barakaldo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
             <div class="project-card__overlay">
               <span class="project-card__category">Reformas Integrales</span>
-              <h3 class="project-card__title">Proyecto 03</h3>
+              <h3 class="project-card__title">Reforma Integral Vivienda 95m²</h3>
               <span class="project-card__location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 Barakaldo
@@ -3096,14 +3167,85 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
         </article>
 
-        <!-- Proyecto 04 (Albañilería / Suelos) -->
-        <article class="project-card reveal" data-category="albanileria">
+        <!-- 4. Baño 02 -->
+        <article class="project-card reveal" data-category="baños">
           <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&w=800&q=80" alt="Trabajo de albañilería y tabiquería en Portugalete" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=800&q=80" alt="Baño moderno con doble lavabo suspendido en Getxo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
             <div class="project-card__overlay">
-              <span class="project-card__category">Albañilería</span>
-              <h3 class="project-card__title">Proyecto 04</h3>
+              <span class="project-card__category">Baños</span>
+              <h3 class="project-card__title">Baño con Doble Lavabo</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Getxo (Neguri)
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 5. Cocina 02 -->
+        <article class="project-card reveal reveal-delay-1" data-category="cocinas">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Cocina contemporánea en blanco y madera en Bilbao" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Cocinas</span>
+              <h3 class="project-card__title">Cocina Lineal con Península</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Bilbao (Abando)
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 6. Reforma Integral 02 -->
+        <article class="project-card reveal reveal-delay-2" data-category="reformas">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80" alt="Transformación de vivienda en Bilbao" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Reformas Integrales</span>
+              <h3 class="project-card__title">Renovación Espacio Diáfano</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Bilbao (Casco Viejo)
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 7. Baño 03 -->
+        <article class="project-card reveal" data-category="baños">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" alt="Cambio de bañera por ducha porcelánica en Barakaldo" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Baños</span>
+              <h3 class="project-card__title">Plato de Ducha y Mampara Fija</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Barakaldo (Cruces)
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 8. Cocina 03 -->
+        <article class="project-card reveal reveal-delay-1" data-category="cocinas">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80" alt="Cocina nórdica funcional en Portugalete" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Cocinas</span>
+              <h3 class="project-card__title">Cocina Luminosa sin Tirador</h3>
               <span class="project-card__location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 Portugalete
@@ -3115,33 +3257,13 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
         </article>
 
-        <!-- Proyecto 05 (Pintura y acabados) -->
-        <article class="project-card reveal reveal-delay-1" data-category="pintura">
+        <!-- 9. Reforma Integral 03 -->
+        <article class="project-card reveal reveal-delay-2" data-category="reformas">
           <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Pintura lisa y decoración en Santurtzi" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80" alt="Reforma integral de ático en Leioa" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
             <div class="project-card__overlay">
-              <span class="project-card__category">Pintura</span>
-              <h3 class="project-card__title">Proyecto 05</h3>
-              <span class="project-card__location">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Santurtzi
-              </span>
-            </div>
-            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-            </button>
-          </div>
-        </article>
-
-        <!-- Proyecto 06 (Carpintería a medida) -->
-        <article class="project-card reveal reveal-delay-2" data-category="carpinteria">
-          <div class="project-card__image-box">
-            <!-- REEMPLAZAR POR FOTO REAL DEL PROYECTO -->
-            <img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80" alt="Carpintería de puertas y armarios en Leioa" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
-            <div class="project-card__overlay">
-              <span class="project-card__category">Carpintería</span>
-              <h3 class="project-card__title">Proyecto 06</h3>
+              <span class="project-card__category">Reformas Integrales</span>
+              <h3 class="project-card__title">Reforma de Ático con Vigas Vistas</h3>
               <span class="project-card__location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 Leioa
@@ -3153,6 +3275,113 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
         </article>
 
+        <!-- 10. Albañilería 01 -->
+        <article class="project-card reveal" data-category="albanileria">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&w=800&q=80" alt="Trabajo de albañilería y tabiquería en Portugalete" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Albañilería</span>
+              <h3 class="project-card__title">Tabiquería y Falsos Techos Pladur</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Portugalete
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 11. Albañilería 02 -->
+        <article class="project-card reveal reveal-delay-1" data-category="albanileria">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80" alt="Solado cerámico de gran formato en Santurtzi" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Albañilería</span>
+              <h3 class="project-card__title">Solado y Nivelación de Pavimentos</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Santurtzi
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 12. Pintura 01 -->
+        <article class="project-card reveal reveal-delay-2" data-category="pintura">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Pintura lisa y alisado de gotelé en Santurtzi" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Pintura</span>
+              <h3 class="project-card__title">Alisado Integral de Paredes</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Santurtzi
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 13. Pintura 02 -->
+        <article class="project-card reveal" data-category="pintura">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="Pintura plástica lavable y acabados en Basauri" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Pintura</span>
+              <h3 class="project-card__title">Paredes de Acento y Molduras</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Basauri
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 14. Carpintería 01 -->
+        <article class="project-card reveal reveal-delay-1" data-category="carpinteria">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80" alt="Carpintería de puertas lacadas y suelo laminado en Leioa" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Carpintería</span>
+              <h3 class="project-card__title">Suelo Laminado AC5 y Puertas</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Leioa
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- 15. Carpintería 02 -->
+        <article class="project-card reveal reveal-delay-2" data-category="carpinteria">
+          <div class="project-card__image-box">
+            <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80" alt="Armarios empotrados a medida en Erandio" class="project-card__img" loading="lazy" referrerpolicy="no-referrer">
+            <div class="project-card__overlay">
+              <span class="project-card__category">Carpintería</span>
+              <h3 class="project-card__title">Armarios Empotrados a Medida</h3>
+              <span class="project-card__location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Erandio
+              </span>
+            </div>
+            <button class="project-card__zoom-btn" aria-label="Ver imagen ampliada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </button>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -3681,7 +3910,7 @@ body.has-scroll-reveal .reveal.is-visible {
         <!-- Columna 1: Marca y descripción -->
         <div class="footer-brand">
           <a href="#inicio" class="logo footer-brand__logo" aria-label="Palacios Reformas">
-            <svg class="logo__mark" width="220" height="65" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="logo__mark" width="270" height="80" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="85" cy="42" r="14" fill="#b46d2a"/>
               <path d="M50 48C58 65 72 82 85 92C98 82 112 65 120 48C110 60 98 70 85 70C72 70 60 60 50 48Z" fill="#b46d2a"/>
               <path d="M68 62C68 62 82 108 52 138C62 138 88 122 96 90C92 78 80 66 68 62Z" fill="#ffffff"/>
@@ -3913,10 +4142,33 @@ function initPalaciosApp() {
   applyCompanyData();
 
   /* ==========================================================================
-     3. HEADER STICKY & CAMBIO DE APARIENCIA AL HACER SCROLL
+     3. HEADER STICKY & SCROLLSPY
      ========================================================================== */
   const header = document.getElementById('header');
   const btnScrollTop = document.getElementById('btnScrollTop');
+  const navLinks = document.querySelectorAll('.nav__link');
+  const sections = document.querySelectorAll('section[id]');
+
+  function updateActiveNav() {
+    if (!sections.length || !navLinks.length) return;
+    const scrollPosition = window.scrollY + 120;
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const sectionId = section.getAttribute('id');
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+  }
 
   function handleScroll() {
     const scrollY = window.scrollY;
@@ -3955,20 +4207,19 @@ function initPalaciosApp() {
      ========================================================================== */
   const menuToggle = document.getElementById('menuToggle');
   const mainNav = document.getElementById('mainNav');
-  const navLinks = document.querySelectorAll('.nav__link');
 
   function toggleMobileMenu() {
-    const isOpen = mainNav.classList.toggle('is-open');
-    menuToggle.classList.toggle('is-active');
-    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    const isOpen = mainNav?.classList.toggle('is-open');
+    menuToggle?.classList.toggle('is-active');
+    menuToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     document.body.style.overflow = isOpen ? 'hidden' : '';
   }
 
   function closeMobileMenu() {
-    if (mainNav.classList.contains('is-open')) {
+    if (mainNav?.classList.contains('is-open')) {
       mainNav.classList.remove('is-open');
-      menuToggle.classList.remove('is-active');
-      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle?.classList.remove('is-active');
+      menuToggle?.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     }
   }
@@ -3986,72 +4237,16 @@ function initPalaciosApp() {
   document.addEventListener('click', (e) => {
     if (mainNav?.classList.contains('is-open') &&
         !mainNav.contains(e.target) &&
-        !menuToggle.contains(e.target)) {
+        !menuToggle?.contains(e.target)) {
       closeMobileMenu();
     }
   });
 
   /* ==========================================================================
-     5. SCROLLSPY (DETECCIÓN DE SECCIÓN ACTIVA)
-     ========================================================================== */
-  const sections = document.querySelectorAll('section[id]');
-
-  function updateActiveNav() {
-    const scrollPosition = window.scrollY + 120;
-
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute('id');
-
-      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-        navLinks.forEach(link => {
-          if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
-      }
-    });
-  }
-
-  /* ==========================================================================
-     6. FILTROS DE GALERÍA DE PROYECTOS
+     6. FILTROS DE GALERÍA DE PROYECTOS Y LIGHTBOX DINÁMICO
      ========================================================================== */
   const filterButtons = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.project-card');
-
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Actualizar botón activo
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      const filterValue = button.getAttribute('data-filter');
-
-      projectCards.forEach(card => {
-        const category = card.getAttribute('data-category');
-        if (filterValue === 'all' || category === filterValue) {
-          card.style.display = 'block';
-          setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'scale(1)';
-          }, 10);
-        } else {
-          card.style.opacity = '0';
-          card.style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            card.style.display = 'none';
-          }, 250);
-        }
-      });
-    });
-  });
-
-  /* ==========================================================================
-     7. LIGHTBOX DE PROYECTOS (MODAL CON NAVEGACIÓN Y TECLADO)
-     ========================================================================== */
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxTitle = document.getElementById('lightboxTitle');
@@ -4060,38 +4255,100 @@ function initPalaciosApp() {
   const lightboxPrev = document.getElementById('lightboxPrev');
   const lightboxNext = document.getElementById('lightboxNext');
 
-  let currentProjectIndex = 0;
-  const projectData = [];
+  let currentFilteredList = [];
+  let currentLightboxIndex = 0;
 
-  // Recopilar datos de proyectos visibles
-  projectCards.forEach((card, index) => {
+  function getCardData(card) {
     const img = card.querySelector('.project-card__img');
-    const title = card.querySelector('.project-card__title')?.textContent || `Proyecto ${index + 1}`;
-    const category = card.querySelector('.project-card__category')?.textContent || 'Reforma';
+    const title = card.querySelector('.project-card__title')?.textContent?.trim() || 'Proyecto de Reforma';
+    const category = card.querySelector('.project-card__category')?.textContent?.trim() || 'Palacios Reformas';
     const src = img?.getAttribute('src') || '';
+    return { src, title, category, element: card };
+  }
 
-    projectData.push({ src, title, category });
+  function applyFilter(filterValue) {
+    // 1. Actualizar estado visual de los botones
+    filterButtons.forEach(btn => {
+      if (btn.getAttribute('data-filter') === filterValue) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
 
-    card.addEventListener('click', () => {
-      openLightbox(index);
+    currentFilteredList = [];
+
+    // 2. Filtrar tarjetas
+    projectCards.forEach(card => {
+      const category = card.getAttribute('data-category') || '';
+      const matches = (filterValue === 'all' || category.toLowerCase() === filterValue.toLowerCase());
+
+      if (matches) {
+        card.classList.remove('is-hidden');
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+        currentFilteredList.push(getCardData(card));
+      } else {
+        card.classList.add('is-hidden');
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+      }
+    });
+  }
+
+  // Event Listeners en los botones de filtro
+  filterButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const filterValue = button.getAttribute('data-filter') || 'all';
+      applyFilter(filterValue);
     });
   });
 
+  // Enlaces externos que apunten a un filtro específico (ej. desde servicios)
+  document.querySelectorAll('[data-gallery-filter]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetFilter = link.getAttribute('data-gallery-filter');
+      if (targetFilter) {
+        applyFilter(targetFilter);
+      }
+    });
+  });
+
+  /* ==========================================================================
+     7. LIGHTBOX DE PROYECTOS (MODAL CON NAVEGACIÓN Y TECLADO)
+     ========================================================================== */
   function openLightbox(index) {
-    currentProjectIndex = index;
+    if (!currentFilteredList.length) {
+      // Si la lista está vacía, recopilar todas las tarjetas visibles
+      currentFilteredList = Array.from(projectCards)
+        .filter(c => !c.classList.contains('is-hidden'))
+        .map(getCardData);
+    }
+
+    if (index >= 0 && index < currentFilteredList.length) {
+      currentLightboxIndex = index;
+    } else {
+      currentLightboxIndex = 0;
+    }
+
     updateLightboxContent();
-    lightbox.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    if (lightbox) {
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function closeLightbox() {
-    lightbox.classList.remove('is-open');
-    document.body.style.overflow = '';
+    if (lightbox) {
+      lightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
   }
 
   function updateLightboxContent() {
-    const item = projectData[currentProjectIndex];
-    if (item) {
+    const item = currentFilteredList[currentLightboxIndex];
+    if (item && lightboxImg && lightboxTitle && lightboxCategory) {
       lightboxImg.setAttribute('src', item.src);
       lightboxImg.setAttribute('alt', item.title);
       lightboxTitle.textContent = item.title;
@@ -4100,14 +4357,25 @@ function initPalaciosApp() {
   }
 
   function showNextProject() {
-    currentProjectIndex = (currentProjectIndex + 1) % projectData.length;
+    if (!currentFilteredList.length) return;
+    currentLightboxIndex = (currentLightboxIndex + 1) % currentFilteredList.length;
     updateLightboxContent();
   }
 
   function showPrevProject() {
-    currentProjectIndex = (currentProjectIndex - 1 + projectData.length) % projectData.length;
+    if (!currentFilteredList.length) return;
+    currentLightboxIndex = (currentLightboxIndex - 1 + currentFilteredList.length) % currentFilteredList.length;
     updateLightboxContent();
   }
+
+  // Click en tarjetas de proyecto para abrir el lightbox
+  projectCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const activeCards = Array.from(projectCards).filter(c => !c.classList.contains('is-hidden'));
+      const idx = activeCards.indexOf(card);
+      openLightbox(idx >= 0 ? idx : 0);
+    });
+  });
 
   lightboxClose?.addEventListener('click', closeLightbox);
   lightboxNext?.addEventListener('click', (e) => {
@@ -4119,14 +4387,14 @@ function initPalaciosApp() {
     showPrevProject();
   });
 
-  // Cerrar al hacer clic fuera del contenido
+  // Cerrar al hacer clic fuera del modal
   lightbox?.addEventListener('click', (e) => {
     if (e.target === lightbox || e.target.classList.contains('lightbox__container')) {
       closeLightbox();
     }
   });
 
-  // Manejo de teclado (ESC, Izquierda, Derecha)
+  // Teclado (ESC, Izquierda, Derecha)
   document.addEventListener('keydown', (e) => {
     if (!lightbox?.classList.contains('is-open')) return;
 
@@ -4138,6 +4406,9 @@ function initPalaciosApp() {
       showPrevProject();
     }
   });
+
+  // Inicializar galería con 'all'
+  applyFilter('all');
 
   /* ==========================================================================
      8. SLIDER INTERACTIVO ANTES Y DESPUÉS (POINTER EVENTS, TOUCH & MOUSE)

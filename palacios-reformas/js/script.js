@@ -103,10 +103,33 @@ function initPalaciosApp() {
   applyCompanyData();
 
   /* ==========================================================================
-     3. HEADER STICKY & CAMBIO DE APARIENCIA AL HACER SCROLL
+     3. HEADER STICKY & SCROLLSPY
      ========================================================================== */
   const header = document.getElementById('header');
   const btnScrollTop = document.getElementById('btnScrollTop');
+  const navLinks = document.querySelectorAll('.nav__link');
+  const sections = document.querySelectorAll('section[id]');
+
+  function updateActiveNav() {
+    if (!sections.length || !navLinks.length) return;
+    const scrollPosition = window.scrollY + 120;
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const sectionId = section.getAttribute('id');
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+  }
 
   function handleScroll() {
     const scrollY = window.scrollY;
@@ -145,20 +168,19 @@ function initPalaciosApp() {
      ========================================================================== */
   const menuToggle = document.getElementById('menuToggle');
   const mainNav = document.getElementById('mainNav');
-  const navLinks = document.querySelectorAll('.nav__link');
 
   function toggleMobileMenu() {
-    const isOpen = mainNav.classList.toggle('is-open');
-    menuToggle.classList.toggle('is-active');
-    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    const isOpen = mainNav?.classList.toggle('is-open');
+    menuToggle?.classList.toggle('is-active');
+    menuToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     document.body.style.overflow = isOpen ? 'hidden' : '';
   }
 
   function closeMobileMenu() {
-    if (mainNav.classList.contains('is-open')) {
+    if (mainNav?.classList.contains('is-open')) {
       mainNav.classList.remove('is-open');
-      menuToggle.classList.remove('is-active');
-      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle?.classList.remove('is-active');
+      menuToggle?.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     }
   }
@@ -176,72 +198,16 @@ function initPalaciosApp() {
   document.addEventListener('click', (e) => {
     if (mainNav?.classList.contains('is-open') &&
         !mainNav.contains(e.target) &&
-        !menuToggle.contains(e.target)) {
+        !menuToggle?.contains(e.target)) {
       closeMobileMenu();
     }
   });
 
   /* ==========================================================================
-     5. SCROLLSPY (DETECCIÓN DE SECCIÓN ACTIVA)
-     ========================================================================== */
-  const sections = document.querySelectorAll('section[id]');
-
-  function updateActiveNav() {
-    const scrollPosition = window.scrollY + 120;
-
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute('id');
-
-      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-        navLinks.forEach(link => {
-          if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
-      }
-    });
-  }
-
-  /* ==========================================================================
-     6. FILTROS DE GALERÍA DE PROYECTOS
+     6. FILTROS DE GALERÍA DE PROYECTOS Y LIGHTBOX DINÁMICO
      ========================================================================== */
   const filterButtons = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.project-card');
-
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Actualizar botón activo
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      const filterValue = button.getAttribute('data-filter');
-
-      projectCards.forEach(card => {
-        const category = card.getAttribute('data-category');
-        if (filterValue === 'all' || category === filterValue) {
-          card.style.display = 'block';
-          setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'scale(1)';
-          }, 10);
-        } else {
-          card.style.opacity = '0';
-          card.style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            card.style.display = 'none';
-          }, 250);
-        }
-      });
-    });
-  });
-
-  /* ==========================================================================
-     7. LIGHTBOX DE PROYECTOS (MODAL CON NAVEGACIÓN Y TECLADO)
-     ========================================================================== */
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxTitle = document.getElementById('lightboxTitle');
@@ -250,38 +216,100 @@ function initPalaciosApp() {
   const lightboxPrev = document.getElementById('lightboxPrev');
   const lightboxNext = document.getElementById('lightboxNext');
 
-  let currentProjectIndex = 0;
-  const projectData = [];
+  let currentFilteredList = [];
+  let currentLightboxIndex = 0;
 
-  // Recopilar datos de proyectos visibles
-  projectCards.forEach((card, index) => {
+  function getCardData(card) {
     const img = card.querySelector('.project-card__img');
-    const title = card.querySelector('.project-card__title')?.textContent || `Proyecto ${index + 1}`;
-    const category = card.querySelector('.project-card__category')?.textContent || 'Reforma';
+    const title = card.querySelector('.project-card__title')?.textContent?.trim() || 'Proyecto de Reforma';
+    const category = card.querySelector('.project-card__category')?.textContent?.trim() || 'Palacios Reformas';
     const src = img?.getAttribute('src') || '';
+    return { src, title, category, element: card };
+  }
 
-    projectData.push({ src, title, category });
+  function applyFilter(filterValue) {
+    // 1. Actualizar estado visual de los botones
+    filterButtons.forEach(btn => {
+      if (btn.getAttribute('data-filter') === filterValue) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
 
-    card.addEventListener('click', () => {
-      openLightbox(index);
+    currentFilteredList = [];
+
+    // 2. Filtrar tarjetas
+    projectCards.forEach(card => {
+      const category = card.getAttribute('data-category') || '';
+      const matches = (filterValue === 'all' || category.toLowerCase() === filterValue.toLowerCase());
+
+      if (matches) {
+        card.classList.remove('is-hidden');
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+        currentFilteredList.push(getCardData(card));
+      } else {
+        card.classList.add('is-hidden');
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+      }
+    });
+  }
+
+  // Event Listeners en los botones de filtro
+  filterButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const filterValue = button.getAttribute('data-filter') || 'all';
+      applyFilter(filterValue);
     });
   });
 
+  // Enlaces externos que apunten a un filtro específico (ej. desde servicios)
+  document.querySelectorAll('[data-gallery-filter]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetFilter = link.getAttribute('data-gallery-filter');
+      if (targetFilter) {
+        applyFilter(targetFilter);
+      }
+    });
+  });
+
+  /* ==========================================================================
+     7. LIGHTBOX DE PROYECTOS (MODAL CON NAVEGACIÓN Y TECLADO)
+     ========================================================================== */
   function openLightbox(index) {
-    currentProjectIndex = index;
+    if (!currentFilteredList.length) {
+      // Si la lista está vacía, recopilar todas las tarjetas visibles
+      currentFilteredList = Array.from(projectCards)
+        .filter(c => !c.classList.contains('is-hidden'))
+        .map(getCardData);
+    }
+
+    if (index >= 0 && index < currentFilteredList.length) {
+      currentLightboxIndex = index;
+    } else {
+      currentLightboxIndex = 0;
+    }
+
     updateLightboxContent();
-    lightbox.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    if (lightbox) {
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function closeLightbox() {
-    lightbox.classList.remove('is-open');
-    document.body.style.overflow = '';
+    if (lightbox) {
+      lightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
   }
 
   function updateLightboxContent() {
-    const item = projectData[currentProjectIndex];
-    if (item) {
+    const item = currentFilteredList[currentLightboxIndex];
+    if (item && lightboxImg && lightboxTitle && lightboxCategory) {
       lightboxImg.setAttribute('src', item.src);
       lightboxImg.setAttribute('alt', item.title);
       lightboxTitle.textContent = item.title;
@@ -290,14 +318,25 @@ function initPalaciosApp() {
   }
 
   function showNextProject() {
-    currentProjectIndex = (currentProjectIndex + 1) % projectData.length;
+    if (!currentFilteredList.length) return;
+    currentLightboxIndex = (currentLightboxIndex + 1) % currentFilteredList.length;
     updateLightboxContent();
   }
 
   function showPrevProject() {
-    currentProjectIndex = (currentProjectIndex - 1 + projectData.length) % projectData.length;
+    if (!currentFilteredList.length) return;
+    currentLightboxIndex = (currentLightboxIndex - 1 + currentFilteredList.length) % currentFilteredList.length;
     updateLightboxContent();
   }
+
+  // Click en tarjetas de proyecto para abrir el lightbox
+  projectCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const activeCards = Array.from(projectCards).filter(c => !c.classList.contains('is-hidden'));
+      const idx = activeCards.indexOf(card);
+      openLightbox(idx >= 0 ? idx : 0);
+    });
+  });
 
   lightboxClose?.addEventListener('click', closeLightbox);
   lightboxNext?.addEventListener('click', (e) => {
@@ -309,14 +348,14 @@ function initPalaciosApp() {
     showPrevProject();
   });
 
-  // Cerrar al hacer clic fuera del contenido
+  // Cerrar al hacer clic fuera del modal
   lightbox?.addEventListener('click', (e) => {
     if (e.target === lightbox || e.target.classList.contains('lightbox__container')) {
       closeLightbox();
     }
   });
 
-  // Manejo de teclado (ESC, Izquierda, Derecha)
+  // Teclado (ESC, Izquierda, Derecha)
   document.addEventListener('keydown', (e) => {
     if (!lightbox?.classList.contains('is-open')) return;
 
@@ -328,6 +367,9 @@ function initPalaciosApp() {
       showPrevProject();
     }
   });
+
+  // Inicializar galería con 'all'
+  applyFilter('all');
 
   /* ==========================================================================
      8. SLIDER INTERACTIVO ANTES Y DESPUÉS (POINTER EVENTS, TOUCH & MOUSE)
