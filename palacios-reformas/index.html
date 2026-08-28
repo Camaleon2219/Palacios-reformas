@@ -1442,8 +1442,10 @@ p {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   user-select: none;
-  touch-action: pan-y;
+  -webkit-user-select: none;
+  touch-action: none;
   background-color: var(--dark);
+  cursor: ew-resize;
 }
 
 @media (max-width: 768px) {
@@ -1466,6 +1468,8 @@ p {
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .comparison-before {
@@ -1475,8 +1479,24 @@ p {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
   clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
-  transition: clip-path 0.05s ease-out;
+  pointer-events: none;
+}
+
+.comparison-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  z-index: 15;
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: none;
 }
 
 .comparison-badge {
@@ -1490,6 +1510,7 @@ p {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   z-index: 5;
+  pointer-events: none;
 }
 
 .comparison-badge--before {
@@ -1511,12 +1532,13 @@ p {
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 3px;
+  width: 4px;
   background-color: #ffffff;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
   transform: translateX(-50%);
   cursor: ew-resize;
   z-index: 10;
+  pointer-events: none;
 }
 
 .comparison-handle-btn {
@@ -1524,24 +1546,23 @@ p {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background-color: #ffffff;
   color: var(--primary);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .comparison-container:active .comparison-handle-btn,
 .comparison-container:hover .comparison-handle-btn {
   background-color: var(--accent);
   color: #ffffff;
-  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .comparison-handle-btn svg {
@@ -1550,7 +1571,7 @@ p {
 }
 
 .comparison-info {
-  margin-top: 24px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1569,6 +1590,36 @@ p {
 
 .comparison-info-text p {
   font-size: 0.875rem;
+}
+
+.comparison-presets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparison-preset-btn {
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background-color: var(--surface-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.comparison-preset-btn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.comparison-preset-btn.active {
+  background-color: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -3170,6 +3221,8 @@ body.has-scroll-reveal .reveal.is-visible {
           </div>
 
           <!-- Tirador interactivo -->
+          <!-- Range input nativo para interacción táctil y arrastre garantizado -->
+          <input type="range" class="comparison-range" id="comparisonRange" min="0" max="100" value="50" step="0.1" aria-label="Deslizar para comparar antes y después">
           <div class="comparison-handle" id="comparisonHandle">
             <div class="comparison-handle-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -4090,53 +4143,110 @@ function initPalaciosApp() {
   });
 
   /* ==========================================================================
-     8. SLIDER INTERACTIVO ANTES Y DESPUÉS (MOUSE & TOUCH)
+     8. SLIDER INTERACTIVO ANTES Y DESPUÉS (MOUSE, TOUCH & RANGE INPUT)
      ========================================================================== */
   const comparisonContainer = document.getElementById('comparisonContainer');
   const comparisonBefore = document.getElementById('comparisonBefore');
   const comparisonHandle = document.getElementById('comparisonHandle');
+  const comparisonRange = document.getElementById('comparisonRange');
+  const presetButtons = document.querySelectorAll('.comparison-preset-btn');
 
   if (comparisonContainer && comparisonBefore && comparisonHandle) {
     let isDragging = false;
 
-    function setSliderPosition(x) {
-      const rect = comparisonContainer.getBoundingClientRect();
-      let offsetX = x - rect.left;
-      let percentage = (offsetX / rect.width) * 100;
+    function updateSlider(percentage, updateRangeInput = true) {
+      // Clampear valor entre 0 y 100
+      const clamped = Math.max(0, Math.min(100, Number(percentage)));
+      const clipPolygon = `polygon(0 0, ${clamped}% 0, ${clamped}% 100%, 0 100%)`;
 
-      // Limitar entre 0% y 100%
-      percentage = Math.max(0, Math.min(100, percentage));
+      comparisonBefore.style.clipPath = clipPolygon;
+      comparisonBefore.style.webkitClipPath = clipPolygon;
+      comparisonHandle.style.left = `${clamped}%`;
 
-      comparisonBefore.style.clipPath = `polygon(0 0, ${percentage}% 0, ${percentage}% 100%, 0 100%)`;
-      comparisonHandle.style.left = `${percentage}%`;
+      if (updateRangeInput && comparisonRange) {
+        comparisonRange.value = clamped;
+      }
+
+      // Actualizar botones de preajuste
+      presetButtons.forEach(btn => {
+        const val = parseFloat(btn.getAttribute('data-value'));
+        if (Math.abs(val - clamped) < 2) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
     }
 
+    function calculatePercentFromPointer(clientX) {
+      const rect = comparisonContainer.getBoundingClientRect();
+      if (rect.width <= 0) return 50;
+      const offsetX = clientX - rect.left;
+      return (offsetX / rect.width) * 100;
+    }
+
+    // 1. Control mediante input range (soporte nativo para accesibilidad y arrastre)
+    if (comparisonRange) {
+      comparisonRange.addEventListener('input', (e) => {
+        updateSlider(parseFloat(e.target.value), false);
+      });
+      comparisonRange.addEventListener('change', (e) => {
+        updateSlider(parseFloat(e.target.value), false);
+      });
+    }
+
+    // 2. Control mediante Pointer Events (ratón, táctil, lápiz óptico)
     function onPointerDown(e) {
       isDragging = true;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      setSliderPosition(clientX);
+      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      updateSlider(calculatePercentFromPointer(clientX));
     }
 
     function onPointerMove(e) {
       if (!isDragging) return;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      setSliderPosition(clientX);
+      const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      updateSlider(calculatePercentFromPointer(clientX));
     }
 
     function onPointerUp() {
       isDragging = false;
     }
 
-    // Eventos Mouse
     comparisonContainer.addEventListener('mousedown', onPointerDown);
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', onPointerUp);
 
-    // Eventos Touch (Móviles y Tablets)
-    comparisonContainer.addEventListener('touchstart', onPointerDown, { passive: true });
-    window.addEventListener('touchmove', onPointerMove, { passive: true });
+    // Eventos táctiles
+    comparisonContainer.addEventListener('touchstart', (e) => {
+      onPointerDown(e);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging) {
+        onPointerMove(e);
+      }
+    }, { passive: true });
+
     window.addEventListener('touchend', onPointerUp);
     window.addEventListener('touchcancel', onPointerUp);
+
+    // Clic directo en cualquier parte del contenedor
+    comparisonContainer.addEventListener('click', (e) => {
+      updateSlider(calculatePercentFromPointer(e.clientX));
+    });
+
+    // 3. Botones rápidos de preajuste (0% Antes, 50% Mitad, 100% Después)
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const targetVal = parseFloat(btn.getAttribute('data-value') || '50');
+        updateSlider(targetVal, true);
+      });
+    });
+
+    // Inicializar al 50%
+    updateSlider(50, true);
   }
 
   /* ==========================================================================
