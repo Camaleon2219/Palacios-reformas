@@ -1,0 +1,6 @@
+{
+  "name": "PALACIOS REFORMAS",
+  "description": "Empresa de reformas y construcción en Bilbao y Bizkaia. Reformas integrales, cocinas, baños, albañilería, pintura, carpintería, fontanería y electricidad.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

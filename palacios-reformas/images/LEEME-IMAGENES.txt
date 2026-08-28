@@ -1,0 +1,17 @@
+ESTRUCTURA DE IMÁGENES PARA PALACIOS REFORMAS
+==============================================
+
+Para personalizar las imágenes de la web con fotografías reales de tus obras y reformas en Bilbao y Bizkaia, puedes colocar tus archivos en esta carpeta /images y vincularlos en index.html:
+
+1. hero.jpg           -> Fotografía principal del Hero de alta resolución (1920x1080px aprox).
+2. obra-1.jpg         -> Proyecto 01 (ej. Reforma de Baño moderno)
+3. obra-2.jpg         -> Proyecto 02 (ej. Reforma de Cocina abierta)
+4. obra-3.jpg         -> Proyecto 03 (ej. Reforma Integral de vivienda)
+5. obra-4.jpg         -> Proyecto 04 (ej. Albañilería / Solados)
+6. obra-5.jpg         -> Proyecto 05 (ej. Pintura y alisado)
+7. obra-6.jpg         -> Proyecto 06 (ej. Carpintería a medida)
+8. antes-bano.jpg     -> Foto del estado inicial para el slider interactivo Antes/Después
+9. despues-bano.jpg   -> Foto del estado final para el slider interactivo Antes/Después
+10. logo.png          -> Logotipo oficial de PALACIOS REFORMAS
+
+La web actualmente incluye el logotipo oficial en formato SVG vectorial nítido a cualquier resolución y fotografías de alta calidad optimizadas listas para producción.
