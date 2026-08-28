@@ -35,8 +35,8 @@
 
   /* Espaciados y medidas */
   --container-max: 1240px;
-  --header-height: 92px;
-  --header-height-scrolled: 76px;
+  --header-height: 120px;
+  --header-height-scrolled: 84px;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -385,33 +385,50 @@ p {
 }
 
 .logo__img {
-  height: 64px;
+  height: 110px;
   width: auto;
+  max-width: 480px;
   object-fit: contain;
-  transition: height var(--transition-normal);
+  display: block;
+  transition: height var(--transition-normal), max-width var(--transition-normal);
 }
 
 .header--scrolled .logo__img {
-  height: 54px;
+  height: 72px;
+  max-width: 320px;
+}
+
+.logo__img--footer {
+  height: 110px;
+  max-width: 480px;
+  background-color: rgba(255, 255, 255, 0.94);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 991px) {
-  .logo__mark {
-    height: 56px;
-    max-width: 250px;
+  .logo__mark,
+  .logo__img {
+    height: 80px;
+    max-width: 340px;
   }
-  .header--scrolled .logo__mark {
-    height: 50px;
+  .header--scrolled .logo__mark,
+  .header--scrolled .logo__img {
+    height: 60px;
   }
 }
 
 @media (max-width: 480px) {
-  .logo__mark {
-    height: 48px;
-    max-width: 215px;
+  .logo__mark,
+  .logo__img {
+    height: 64px;
+    max-width: 270px;
   }
-  .header--scrolled .logo__mark {
-    height: 44px;
+  .header--scrolled .logo__mark,
+  .header--scrolled .logo__img {
+    height: 52px;
   }
 }
 

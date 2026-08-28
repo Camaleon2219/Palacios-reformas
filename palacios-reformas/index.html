@@ -62,8 +62,8 @@
 
   /* Espaciados y medidas */
   --container-max: 1240px;
-  --header-height: 92px;
-  --header-height-scrolled: 76px;
+  --header-height: 120px;
+  --header-height-scrolled: 84px;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -412,33 +412,50 @@ p {
 }
 
 .logo__img {
-  height: 64px;
+  height: 110px;
   width: auto;
+  max-width: 480px;
   object-fit: contain;
-  transition: height var(--transition-normal);
+  display: block;
+  transition: height var(--transition-normal), max-width var(--transition-normal);
 }
 
 .header--scrolled .logo__img {
-  height: 54px;
+  height: 72px;
+  max-width: 320px;
+}
+
+.logo__img--footer {
+  height: 110px;
+  max-width: 480px;
+  background-color: rgba(255, 255, 255, 0.94);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 991px) {
-  .logo__mark {
-    height: 56px;
-    max-width: 250px;
+  .logo__mark,
+  .logo__img {
+    height: 80px;
+    max-width: 340px;
   }
-  .header--scrolled .logo__mark {
-    height: 50px;
+  .header--scrolled .logo__mark,
+  .header--scrolled .logo__img {
+    height: 60px;
   }
 }
 
 @media (max-width: 480px) {
-  .logo__mark {
-    height: 48px;
-    max-width: 215px;
+  .logo__mark,
+  .logo__img {
+    height: 64px;
+    max-width: 270px;
   }
-  .header--scrolled .logo__mark {
-    height: 44px;
+  .header--scrolled .logo__mark,
+  .header--scrolled .logo__img {
+    height: 52px;
   }
 }
 
@@ -2746,29 +2763,7 @@ body.has-scroll-reveal .reveal.is-visible {
     <div class="container header__container">
       <!-- Logotipo Vectorial Oficial PALACIOS REFORMAS -->
       <a href="#inicio" class="logo" aria-label="Palacios Reformas - Inicio">
-        <svg class="logo__mark" width="270" height="80" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo Palacios Reformas">
-          <!-- Icono persona estilizada -->
-          <circle cx="85" cy="42" r="14" fill="#b46d2a"/>
-          <path d="M50 48C58 65 72 82 85 92C98 82 112 65 120 48C110 60 98 70 85 70C72 70 60 60 50 48Z" fill="#b46d2a"/>
-          <path d="M68 62C68 62 82 108 52 138C62 138 88 122 96 90C92 78 80 66 68 62Z" fill="#1e1f23"/>
-          <path d="M85 75C85 75 92 105 105 125C99 105 92 88 85 75Z" fill="#b46d2a"/>
-          <!-- Tejado moderno con chimenea -->
-          <path d="M210 58L305 18L440 68" stroke="#b46d2a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M375 36V22H395V44" stroke="#b46d2a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Tipografía PALACIOS -->
-          <text x="115" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">P</text>
-          <text x="155" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">A</text>
-          <text x="210" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#b46d2a" letter-spacing="2">L</text>
-          <text x="250" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">A</text>
-          <text x="305" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">C</text>
-          <text x="355" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#b46d2a" letter-spacing="2">I</text>
-          <text x="382" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">O</text>
-          <text x="435" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#1e1f23" letter-spacing="2">S</text>
-          <!-- Líneas de acento y subtítulo -->
-          <line x1="115" y1="134" x2="160" y2="134" stroke="#b46d2a" stroke-width="2.5"/>
-          <text x="175" y="138" font-family="'Outfit', sans-serif" font-weight="700" font-size="14.5" fill="#1e1f23" letter-spacing="4.5">REFORMAS EN GENERAL</text>
-          <line x1="440" y1="134" x2="485" y2="134" stroke="#b46d2a" stroke-width="2.5"/>
-        </svg>
+        <img src="images/logo.png" alt="Palacios Reformas en General" class="logo__img" width="380" height="120">
       </a>
 
       <!-- Menú de Navegación -->
@@ -3966,25 +3961,7 @@ body.has-scroll-reveal .reveal.is-visible {
         <!-- Columna 1: Marca y descripción -->
         <div class="footer-brand">
           <a href="#inicio" class="logo footer-brand__logo" aria-label="Palacios Reformas">
-            <svg class="logo__mark" width="270" height="80" viewBox="0 0 540 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="85" cy="42" r="14" fill="#b46d2a"/>
-              <path d="M50 48C58 65 72 82 85 92C98 82 112 65 120 48C110 60 98 70 85 70C72 70 60 60 50 48Z" fill="#b46d2a"/>
-              <path d="M68 62C68 62 82 108 52 138C62 138 88 122 96 90C92 78 80 66 68 62Z" fill="#ffffff"/>
-              <path d="M85 75C85 75 92 105 105 125C99 105 92 88 85 75Z" fill="#b46d2a"/>
-              <path d="M210 58L305 18L440 68" stroke="#b46d2a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M375 36V22H395V44" stroke="#b46d2a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-              <text x="115" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">P</text>
-              <text x="155" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">A</text>
-              <text x="210" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#b46d2a" letter-spacing="2">L</text>
-              <text x="250" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">A</text>
-              <text x="305" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">C</text>
-              <text x="355" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#b46d2a" letter-spacing="2">I</text>
-              <text x="382" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">O</text>
-              <text x="435" y="112" font-family="'Outfit', sans-serif" font-weight="800" font-size="52" fill="#ffffff" letter-spacing="2">S</text>
-              <line x1="115" y1="134" x2="160" y2="134" stroke="#b46d2a" stroke-width="2.5"/>
-              <text x="175" y="138" font-family="'Outfit', sans-serif" font-weight="700" font-size="14.5" fill="#ffffff" letter-spacing="4.5">REFORMAS EN GENERAL</text>
-              <line x1="440" y1="134" x2="485" y2="134" stroke="#b46d2a" stroke-width="2.5"/>
-            </svg>
+            <img src="images/logo.png" alt="Palacios Reformas en General" class="logo__img logo__img--footer" width="380" height="120">
           </a>
           <p class="footer-brand__desc">
             Reformas y trabajos de construcción en Bilbao y Bizkaia. Calidad, compromiso y seriedad en cada detalle de tu obra.
